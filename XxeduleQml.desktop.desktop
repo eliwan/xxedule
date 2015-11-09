@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=XxeduleQml
+Exec=qmlscene $@ Main.qml
+Icon=XxeduleQml.png
+Terminal=false
+Type=Application
+X-Ubuntu-Touch=true
+
+Name[en_US]=XxeduleQml.desktop

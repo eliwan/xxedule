@@ -1,0 +1,17 @@
+{
+    "name": "xxeduleqml.eliwan",
+    "description": "description of XxeduleQml",
+    "architecture": "all",
+    "title": "XxeduleQml",
+    "hooks": {
+        "XxeduleQml": {
+            "apparmor": "XxeduleQml.apparmor",
+            "desktop":  "XxeduleQml.desktop"
+        }
+    },
+    "version": "0.1",
+    "maintainer": "Joachim Van der Auwera <joachim@eliwan.be>",
+    "framework" : "ubuntu-sdk-15.04"
+}
+
+
