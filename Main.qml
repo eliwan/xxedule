@@ -83,6 +83,8 @@ MainView {
             title: 'Days'
             visible: false
 
+            property string schedulesHref
+
             ListModel {
                 id: dayItems
 
@@ -121,6 +123,15 @@ MainView {
                     return (idx >= 0 && idx < count) ? get(idx).title: ""
                 }
             }
+
+            JSON.JSONListModel {
+                    id: dayJsonItems
+                    model: dayItems
+                    query: "$.links"
+                }
+
+            onSchedulesHrefChanged: dayJsonItems.source = schedulesHref
+
 
             Component {
                 id: dayItemDelegate
@@ -325,6 +336,7 @@ MainView {
                     text: i18n.tr("to Days")
                     width: units.gu(12)
                     onClicked: {
+                        days.schedulesHref = "http://cfp.devoxx.be/api/conferences/DV15/schedules/"
                         pageStack.push(days)
                     }
                 }

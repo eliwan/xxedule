@@ -11,33 +11,46 @@ Item {
     property string source: ""
     property string json: ""
     property string query: ""
+    property string eTag: ""
+    property string userAgent: "Ubuntu Touch Xxedule"
 
     property ListModel model : ListModel { id: jsonModel }
     property alias count: jsonModel.count
 
     onSourceChanged: {
-        var xhr = new XMLHttpRequest;
-        xhr.open("GET", source);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE)
-                json = xhr.responseText;
+        console.log("----source:" + source)
+        if (source) {
+            var xhr = new XMLHttpRequest;
+            xhr.open("GET", source);
+            xhr.setRequestHeader("If-None-Match", eTag)
+            xhr.setRequestHeader("User-Agent", userAgent)
+            xhr.setRequestHeader("Accept", "application/json")
+            console.log("xhr invoke" + source)
+            xhr.onreadystatechange = function() {
+                console.log("onready:" + xhr.readyState)
+                if (xhr.readyState == XMLHttpRequest.DONE)
+                    eTag = xhr.getResponseHeader("ETag")
+                    console.log("got eTag:" + eTag)
+                    json = xhr.responseText;
+                    console.log("got json:" + json)
+            }
+            xhr.send();
         }
-        xhr.send();
     }
 
     onJsonChanged: updateJSONModel()
     onQueryChanged: updateJSONModel()
 
     function updateJSONModel() {
-        jsonModel.clear();
-
         if ( json === "" )
             return;
+
+        model.clear();
 
         var objectArray = parseJSONString(json, query);
         for ( var key in objectArray ) {
             var jo = objectArray[key];
-            jsonModel.append( jo );
+            model.append( jo );
         }
     }
 
