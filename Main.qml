@@ -88,6 +88,7 @@ MainView {
             ListModel {
                 id: dayItems
 
+                // got eTag:941982863 (zonder Zz)
                 ListElement {
                     href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/monday/"
                     rel: "http://cfp.devoxx.be/api/profile/schedule"
@@ -124,14 +125,21 @@ MainView {
                 }
             }
 
+            ActivityIndicator {
+                id: daysActivityIndicator
+                anchors.right: parent.right
+                running: dayJsonItems.isLoading
+                onVisibleChanged: running = dayJsonItems.isLoading()
+            }
+
             JSON.JSONListModel {
                     id: dayJsonItems
                     model: dayItems
                     query: "$.links"
+                    activityIndicator: daysActivityIndicator
                 }
 
             onSchedulesHrefChanged: dayJsonItems.source = schedulesHref
-
 
             Component {
                 id: dayItemDelegate
@@ -174,78 +182,13 @@ MainView {
             title: i18n.tr("XxeduleQml")
             visible: false
 
-            ListModel {
-                id: currencies
-                ListElement {
-                    currency: "EUR"
-                    rate: 1.0
-                }
-
-                function getCurrency(idx) {
-                    return (idx >= 0 && idx < count) ? get(idx).currency: ""
-                }
-
-                function getRate(idx) {
-                    return (idx >= 0 && idx < count) ? get(idx).rate: 0.0
-                }
-            }
-
-            XmlListModel {
-                id: ratesFetcher
-                source: "http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml"
-                namespaceDeclarations: "declare namespace gesmes='http://www.gesmes.org/xml/2002-08-01';"
-                                       +"declare default element namespace 'http://www.ecb.int/vocabulary/2002-08-01/eurofxref';"
-                query: "/gesmes:Envelope/Cube/Cube/Cube"
-
-                onStatusChanged: {
-                    if (status === XmlListModel.Ready) {
-                        for (var i = 0; i < count; i++)
-                            currencies.append({"currency": get(i).currency, "rate": parseFloat(get(i).rate)})
-                    }
-                }
-
-                XmlRole { name: "currency"; query: "@currency/string()" }
-                XmlRole { name: "rate"; query: "@rate/string()" }
-            }
-
+            /*
             ActivityIndicator {
                 objectName: "activityIndicator"
                 anchors.right: parent.right
                 running: ratesFetcher.status === XmlListModel.Loading
             }
-
-            Component {
-                id: currencySelector
-                Popover {
-                    Column {
-                        anchors {
-                            top: parent.top
-                            left: parent.left
-                            right: parent.right
-                        }
-                        height: pageLayout.height
-                        Header {
-                            id: header
-                            text: i18n.tr("Select currency")
-                        }
-                        ListView {
-                            clip: true
-                            width: parent.width
-                            height: parent.height - header.height
-                            model: currencies
-                            delegate: Standard {
-                                objectName: "popoverCurrencySelector"
-                                text: currency
-                                onClicked: {
-                                    caller.currencyIndex = index
-                                    caller.input.update()
-                                    hide()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            */
 
             Column {
                 id: pageLayout
@@ -255,80 +198,6 @@ MainView {
                     margins: units.gu(2)
                 }
                 spacing: units.gu(1)
-
-                Row {
-                    spacing: units.gu(1)
-
-                    Button {
-                        id: selectorFrom
-                        objectName: "selectorFrom"
-                        property int currencyIndex: 0
-                        property TextField input: inputFrom
-                        text: currencies.getCurrency(currencyIndex)
-                        onClicked: PopupUtils.open(currencySelector, selectorFrom)
-                    }
-
-                    TextField {
-                        id: inputFrom
-                        objectName: "inputFrom"
-                        errorHighlight: false
-                        validator: DoubleValidator {notation: DoubleValidator.StandardNotation}
-                        width: pageLayout.width - 2 * parent.margins - parent.buttonWidth
-                        height: units.gu(5)
-                        font.pixelSize: FontUtils.sizeToPixels("medium")
-                        text: '0.0'
-                        onTextChanged: {
-                            if (activeFocus) {
-                                inputTo.text = convert(inputFrom.text, selectorFrom.currencyIndex, selectorTo.currencyIndex)
-                            }
-                        }
-                        function update() {
-                            text = convert(inputTo.text, selectorTo.currencyIndex, selectorFrom.currencyIndex)
-                        }
-                    }
-                }
-
-                Row {
-                    spacing: units.gu(1)
-                    Button {
-                        id: selectorTo
-                        objectName: "selectorTo"
-                        property int currencyIndex: 1
-                        property TextField input: inputTo
-                        text: currencies.getCurrency(currencyIndex)
-                        onClicked: PopupUtils.open(currencySelector, selectorTo)
-                    }
-
-                    TextField {
-                        id: inputTo
-                        objectName: "inputTo"
-                        errorHighlight: false
-                        validator: DoubleValidator {notation: DoubleValidator.StandardNotation}
-                        width: pageLayout.width - 2 * parent.margins - parent.buttonWidth
-                        height: units.gu(5)
-                        font.pixelSize: FontUtils.sizeToPixels("medium")
-                        text: '0.0'
-                        onTextChanged: {
-                            if (activeFocus) {
-                                inputFrom.text = convert(inputTo.text, selectorTo.currencyIndex, selectorFrom.currencyIndex)
-                            }
-                        }
-                        function update() {
-                            text = convert(inputFrom.text, selectorFrom.currencyIndex, selectorTo.currencyIndex)
-                        }
-                    }
-                }
-
-                Button {
-                    id: clearBtn
-                    objectName: "clearBtn"
-                    text: i18n.tr("Clear")
-                    width: units.gu(12)
-                    onClicked: {
-                        inputTo.text = '0.0';
-                        inputFrom.text = '0.0';
-                    }
-                }
 
                 Button {
                     id: toDays

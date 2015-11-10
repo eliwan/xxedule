@@ -13,26 +13,28 @@ Item {
     property string query: ""
     property string eTag: ""
     property string userAgent: "Ubuntu Touch Xxedule"
+    property Item activityIndicator
 
     property ListModel model : ListModel { id: jsonModel }
     property alias count: jsonModel.count
 
+    function isLoading() {
+        return status
+    }
+
     onSourceChanged: {
-        console.log("----source:" + source)
         if (source) {
+            if (activityIndicator) activityIndicator.running = true
             var xhr = new XMLHttpRequest;
             xhr.open("GET", source);
             xhr.setRequestHeader("If-None-Match", eTag)
             xhr.setRequestHeader("User-Agent", userAgent)
             xhr.setRequestHeader("Accept", "application/json")
-            console.log("xhr invoke" + source)
             xhr.onreadystatechange = function() {
-                console.log("onready:" + xhr.readyState)
                 if (xhr.readyState == XMLHttpRequest.DONE)
                     eTag = xhr.getResponseHeader("ETag")
-                    console.log("got eTag:" + eTag)
                     json = xhr.responseText;
-                    console.log("got json:" + json)
+                if (activityIndicator) activityIndicator.running = false
             }
             xhr.send();
         }
