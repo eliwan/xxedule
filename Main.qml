@@ -3,7 +3,6 @@ import QtQuick.XmlListModel 2.0
 import Ubuntu.Components 1.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "JSONListModel" as JSON
 
 
 /*!
@@ -132,7 +131,7 @@ MainView {
                 onVisibleChanged: running = dayJsonItems.isLoading()
             }
 
-            JSON.JSONListModel {
+            JsonListModel {
                     id: dayJsonItems
                     model: dayItems
                     query: "$.links"

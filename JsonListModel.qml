@@ -1,11 +1,11 @@
-/* JSONListModel - a QML ListModel with JSON and JSONPath support
+/* based on JSONListModel - a QML ListModel with JSON and JSONPath support
  *
  * Copyright (c) 2012 Romain Pokrzywka (KDAB) (romain@kdab.com)
  * Licensed under the MIT licence (http://opensource.org/licenses/mit-license.php)
  */
 
 import QtQuick 2.0
-import "jsonpath.js" as JSONPath
+import "jsonpath.js" as JsonPath
 
 Item {
     property string source: ""
@@ -17,10 +17,6 @@ Item {
 
     property ListModel model : ListModel { id: jsonModel }
     property alias count: jsonModel.count
-
-    function isLoading() {
-        return status
-    }
 
     onSourceChanged: {
         if (source) {
@@ -40,26 +36,26 @@ Item {
         }
     }
 
-    onJsonChanged: updateJSONModel()
-    onQueryChanged: updateJSONModel()
+    onJsonChanged: updateJsonModel()
+    onQueryChanged: updateJsonModel()
 
-    function updateJSONModel() {
+    function updateJsonModel() {
         if ( json === "" )
             return;
 
         model.clear();
 
-        var objectArray = parseJSONString(json, query);
+        var objectArray = parseJsonString(json, query);
         for ( var key in objectArray ) {
             var jo = objectArray[key];
             model.append( jo );
         }
     }
 
-    function parseJSONString(jsonString, jsonPathQuery) {
+    function parseJsonString(jsonString, jsonPathQuery) {
         var objectArray = JSON.parse(jsonString);
         if ( jsonPathQuery !== "" )
-            objectArray = JSONPath.jsonPath(objectArray, jsonPathQuery);
+            objectArray = JsonPath.jsonPath(objectArray, jsonPathQuery);
 
         return objectArray;
     }
