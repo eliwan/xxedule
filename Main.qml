@@ -32,22 +32,18 @@ MainView {
     property real spacing: units.gu(1)
     property real margins: units.gu(2)
     property real buttonWidth: units.gu(9)
-
-    function convert(from, fromRateIndex, toRateIndex) {
-        var fromRate = currencies.getRate(fromRateIndex);
-        if (from.length <= 0 || fromRate <= 0.0)
-            return "";
-        return currencies.getRate(toRateIndex) * (parseFloat(from) / fromRate);
-    }
-
     PageStack {
         id: pageStack
         anchors.fill: parent
-        Component.onCompleted: pageStack.push(conferences)
+
+        Component.onCompleted: {
+            pageStack.push(conferences)
+        }
 
         Page {
             id: schedule
             title: 'Schedule'
+            visible: false
 
             property int dayIndex
 
@@ -66,12 +62,15 @@ MainView {
                 spacing: units.gu(1)
 
                 Row {
+                    anchors.fill: parent
+                    spacing: units.gu(1)
+
                     TextField {
                         id: dayInfo
                         objectName: "inputFrom"
                         errorHighlight: false
-                        width: pageLayout.width - 2 * parent.margins
                         height: units.gu(5)
+                        width: units.gu(46)
                         font.pixelSize: FontUtils.sizeToPixels("medium")
                         text: ''
                     }
@@ -82,6 +81,7 @@ MainView {
         Page {
             id: days
             title: 'Days'
+            visible: false
 
             ListModel {
                 id: dayItems
@@ -107,7 +107,6 @@ MainView {
                     return (idx >= 0 && idx < count) ? get(idx).label: ""
                 }
             }
-
 
             Component {
                 id: dayItemDelegate
@@ -143,11 +142,13 @@ MainView {
         Page {
             id: presentation
             title: 'Presentation'
-        }
+            visible: false
+       }
 
         Page {
             id: conferences
             title: i18n.tr("XxeduleQml")
+            visible: false
 
             ListModel {
                 id: currencies
@@ -315,32 +316,6 @@ MainView {
                     }
                 }
             }
-        /*
-        Column {
-            spacing: units.gu(1)
-            anchors {
-                margins: root.margins
-                fill: parent
-            }
-
-            Label {
-                id: label
-                objectName: "label"
-
-                text: i18n.tr("Hello..")
-            }
-
-            Button {
-                objectName: "button"
-                width: parent.width
-
-                text: i18n.tr("Tap me!")
-
-                onClicked: {
-                    label.text = i18n.tr("..world!")
-                }
-            }
-            */
         }
     }
 }
