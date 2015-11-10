@@ -14,6 +14,7 @@ Item {
     property string eTag: ""
     property string userAgent: "Ubuntu Touch Xxedule"
     property Item activityIndicator
+    property Item cache
 
     property ListModel model : ListModel { id: jsonModel }
     property alias count: jsonModel.count
@@ -21,16 +22,26 @@ Item {
     onSourceChanged: {
         if (source) {
             if (activityIndicator) activityIndicator.running = true
+
+            // get from cache
+            eTag = ''
+            if (cache) {
+                eTag = cache.getETag(source)
+                json = cache.getJson(source)
+            }
+
             var xhr = new XMLHttpRequest;
             xhr.open("GET", source);
             xhr.setRequestHeader("If-None-Match", eTag)
             xhr.setRequestHeader("User-Agent", userAgent)
             xhr.setRequestHeader("Accept", "application/json")
             xhr.onreadystatechange = function() {
-                if (xhr.readyState == XMLHttpRequest.DONE)
+                if (xhr.readyState == XMLHttpRequest.DONE) {
                     eTag = xhr.getResponseHeader("ETag")
                     json = xhr.responseText;
-                if (activityIndicator) activityIndicator.running = false
+                    if (cache) cache.put(source, eTag, json)
+                    if (activityIndicator) activityIndicator.running = false
+                }
             }
             xhr.send();
         }

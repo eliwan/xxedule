@@ -28,6 +28,15 @@ MainView {
     width: units.gu(50)
     height: units.gu(75)
 
+    Cache {
+        id: jsonCache
+        maxItems: -1
+    }
+    Cache {
+        id: presentationCache
+        maxItems: 50
+    }
+
     property real spacing: units.gu(1)
     property real margins: units.gu(2)
     property real buttonWidth: units.gu(9)
@@ -87,39 +96,10 @@ MainView {
             ListModel {
                 id: dayItems
 
-                // got eTag:941982863 (zonder Zz)
-                ListElement {
-                    href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/monday/"
-                    rel: "http://cfp.devoxx.be/api/profile/schedule"
-                    title: "ZzMonday, 9th November 2015"
-                }
-                ListElement {
-                    href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/tuesday/"
-                    rel: "http://cfp.devoxx.be/api/profile/schedule"
-                    title: "ZzTuesday, 10th November 2015"
-
-                }
-                ListElement {
-                    href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/wednesday/"
-                    rel: "http://cfp.devoxx.be/api/profile/schedule"
-                    title: "ZzWednesday, 11th November 2015"
-                }
-                ListElement {
-                    href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/thursday/"
-                    rel: "http://cfp.devoxx.be/api/profile/schedule"
-                    title: "ZzThursday, 12th November 2015"
-
-                }
-                ListElement {
-                    href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/friday/"
-                    rel: "http://cfp.devoxx.be/api/profile/schedule"
-                    title: "ZzFriday, 13th November 2015"
-                }
-
                 function getHref(idx) {
                     return (idx >= 0 && idx < count) ? get(idx).href: ""
                 }
-                function getTitle(idx) {
+                function getTitle(idx) {                    
                     return (idx >= 0 && idx < count) ? get(idx).title: ""
                 }
             }
@@ -127,8 +107,6 @@ MainView {
             ActivityIndicator {
                 id: daysActivityIndicator
                 anchors.right: parent.right
-                running: dayJsonItems.isLoading
-                onVisibleChanged: running = dayJsonItems.isLoading()
             }
 
             JsonListModel {
@@ -136,6 +114,7 @@ MainView {
                     model: dayItems
                     query: "$.links"
                     activityIndicator: daysActivityIndicator
+                    cache: jsonCache
                 }
 
             onSchedulesHrefChanged: dayJsonItems.source = schedulesHref
@@ -161,6 +140,7 @@ MainView {
                     model: dayItems
                     delegate: Standard {
                         text: title
+                        progression: true
                         onClicked: {
                             schedule.updateDay(index)
                             pageStack.push(schedule)
@@ -178,34 +158,60 @@ MainView {
 
         Page {
             id: conferences
-            title: i18n.tr("XxeduleQml")
+            title: "Xxedule - Conference"
             visible: false
 
-            /*
-            ActivityIndicator {
-                objectName: "activityIndicator"
-                anchors.right: parent.right
-                running: ratesFetcher.status === XmlListModel.Loading
+            ListModel {
+                id: conferenceItems
+
+                function getHref(idx) {
+                    return (idx >= 0 && idx < count) ? get(idx).href: ""
+                }
+                function getTitle(idx) {
+                    return (idx >= 0 && idx < count) ? get(idx).title: ""
+                }
             }
-            */
+
+            ActivityIndicator {
+                id: conferencesActivityIndicator
+                anchors.right: parent.right
+            }
+
+            JsonListModel {
+                    id: conferenceJsonItems
+                    model: conferenceItems
+                    source: 'http://cfp.devoxx.be/api/conferences'
+                    query: "$.links"
+                    activityIndicator: conferencesActivityIndicator
+                    cache: jsonCache
+                }
+
+            Component {
+                id: conferenceItemDelegate
+                Row {
+                    spacing: units.gu(1)
+                    Text { text: label }
+                }
+            }
 
             Column {
-                id: pageLayout
+                id: conferencesLayout
 
                 anchors {
                     fill: parent
                     margins: units.gu(2)
                 }
-                spacing: units.gu(1)
 
-                Button {
-                    id: toDays
-                    objectName: "toDays"
-                    text: i18n.tr("to Days")
-                    width: units.gu(12)
-                    onClicked: {
-                        days.schedulesHref = "http://cfp.devoxx.be/api/conferences/DV15/schedules/"
-                        pageStack.push(days)
+                ListView {
+                    anchors.fill: parent
+                    model: conferenceItems
+                    delegate: Standard {
+                        text: title.replace(' CFP', '')
+                        progression: true
+                        onClicked: {
+                            days.schedulesHref = conferenceItems.getHref(index) + '/schedules'
+                            pageStack.push(days)
+                        }
                     }
                 }
             }
