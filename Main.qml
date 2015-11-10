@@ -49,7 +49,7 @@ MainView {
 
             function updateDay(idx) {
                 dayIndex = idx
-                dayInfo.text = dayItems.getConference(dayIndex) + " - " + dayItems.getDay(dayIndex) + " - " + dayItems.getLabel(dayIndex)
+                dayInfo.text = dayItems.getTitle(dayIndex)
             }
 
             Column {
@@ -87,24 +87,38 @@ MainView {
                 id: dayItems
 
                 ListElement {
-                        conference: "DV"
-                        day: "1"
-                        label: "Monday 9 November"
+                    href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/monday/"
+                    rel: "http://cfp.devoxx.be/api/profile/schedule"
+                    title: "ZzMonday, 9th November 2015"
                 }
                 ListElement {
-                        conference: "DV"
-                        day: "2"
-                        label: "Tuesday 10 November"
+                    href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/tuesday/"
+                    rel: "http://cfp.devoxx.be/api/profile/schedule"
+                    title: "ZzTuesday, 10th November 2015"
+
+                }
+                ListElement {
+                    href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/wednesday/"
+                    rel: "http://cfp.devoxx.be/api/profile/schedule"
+                    title: "ZzWednesday, 11th November 2015"
+                }
+                ListElement {
+                    href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/thursday/"
+                    rel: "http://cfp.devoxx.be/api/profile/schedule"
+                    title: "ZzThursday, 12th November 2015"
+
+                }
+                ListElement {
+                    href: "http://cfp.devoxx.be/api/conferences/DV15/schedules/friday/"
+                    rel: "http://cfp.devoxx.be/api/profile/schedule"
+                    title: "ZzFriday, 13th November 2015"
                 }
 
-                function getConference(idx) {
-                    return (idx >= 0 && idx < count) ? get(idx).conference: ""
+                function getHref(idx) {
+                    return (idx >= 0 && idx < count) ? get(idx).href: ""
                 }
-                function getDay(idx) {
-                    return (idx >= 0 && idx < count) ? get(idx).day: ""
-                }
-                function getLabel(idx) {
-                    return (idx >= 0 && idx < count) ? get(idx).label: ""
+                function getTitle(idx) {
+                    return (idx >= 0 && idx < count) ? get(idx).title: ""
                 }
             }
 
@@ -128,9 +142,8 @@ MainView {
                     anchors.fill: parent
                     model: dayItems
                     delegate: Standard {
-                        text: label
+                        text: title
                         onClicked: {
-                            //schedule.dayIndex = index
                             schedule.updateDay(index)
                             pageStack.push(schedule)
                         }
