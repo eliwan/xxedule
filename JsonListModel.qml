@@ -37,9 +37,11 @@ Item {
             xhr.setRequestHeader("Accept", "application/json")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
-                    eTag = xhr.getResponseHeader("ETag")
-                    json = xhr.responseText;
-                    if (cache) cache.put(source, eTag, json)
+                    if (xhr.status == 200) {
+                        eTag = xhr.getResponseHeader("ETag")
+                        json = xhr.responseText;
+                        if (cache) cache.put(source, eTag, json)
+                    }
                     if (activityIndicator) activityIndicator.running = false
                 }
             }
@@ -51,10 +53,10 @@ Item {
     onQueryChanged: updateJsonModel()
 
     function updateJsonModel() {
+        model.clear();
+
         if ( json === "" )
             return;
-
-        model.clear();
 
         var objectArray = parseJsonString(json, query);
         for ( var key in objectArray ) {
