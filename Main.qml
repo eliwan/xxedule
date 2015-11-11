@@ -33,6 +33,35 @@ MainView {
         maxItems: -1
     }
 
+    function getPresentationTitle(entry) {
+        if (entry.talk && entry.talk.title) return entry.talk.title
+        if (entry["break"]) return entry["break"].nameEN
+        return ''
+    }
+
+    function getPresentationSummary(entry) {
+        if (entry.talk && entry.talk.summary) return entry.talk.summary
+        return ''
+    }
+
+    function getPresentationSpeakers(entry) {
+        var res = ''
+        if (entry.talk && entry.talk.speakers) {
+            var speakers = entry.talk.speakers
+            if (speakers) {
+                for (var index = 0; index < speakers.length; ++index) {
+                    var speaker = speakers[index];
+                    if (res) {
+                        res = res + '\r\n' + speaker.link.title
+                    } else {
+                        res = speaker.link.title
+                    }
+                }
+            }
+        }
+        return res
+    }
+
     property real spacing: units.gu(1)
     property real margins: units.gu(2)
     property real buttonWidth: units.gu(9)
@@ -63,11 +92,10 @@ MainView {
                 function getRoom(idx) {
                     return (idx >= 0 && idx < count) ? get(idx).roomName: ""
                 }
-                function getTitle(idx) {
+                function getTitle(idx) {                    
                     if (idx >= 0 && idx < count) {
                         var entry = get(idx)
-                        if (entry.talk && entry.talk.title) return entry.talk.title
-                        if (entry["break"]) return entry["break"].nameEN
+                        return getPresentationTitle(entry)
                     }
                     return ""
                 }
@@ -94,35 +122,6 @@ MainView {
                 anchors {
                     fill: parent
                     margins: units.gu(2)
-                }
-
-                Empty {
-                    id: scheduleDelegate
-                    //progression: true
-                    onClicked: {
-                        presentation.updatePresentation(scheduleItems.get(index))
-                        pageStack.push(presentation)
-                    }
-                    Column {
-                        //anchors.fill: parent
-                        spacing: units.gu(1)
-                        Text { text: scheduleItems.getTitle(index) }
-                        Row {
-                            spacing: units.gu(1)
-                            Text {
-                                width: units.gu(8)
-                                text: scheduleItems.getFromTime(index)
-                            }
-                            Text {
-                                width: units.gu(8)
-                                text: scheduleItems.getToTime(index)
-                            }
-                            Text {
-                                width: units.gu(13)
-                                text: scheduleItems.getRoom(index)
-                            }
-                        }
-                    }
                 }
 
                 ListView {
@@ -239,11 +238,12 @@ MainView {
             visible: false
 
             function updatePresentation(item) {
-                presentationTime.text = item.fromTime + " - " + item.toTime
+                presentationFromTime.text = item.fromTime
+                presentationToTime.text = item.toTime
                 presentationRoom.text = item.roomName
-                presentationTitle.text = item.talk.title
-                presentationSummary.text = item.talk.summary
-                //presentationSpeakers.text = item.talk.speakers.name
+                presentationTitle.text = getPresentationTitle(item)
+                presentationSummary.text = getPresentationSummary(item)
+                presentationSpeakers.text = getPresentationSpeakers(item)
             }
 
             Column {
@@ -253,22 +253,58 @@ MainView {
                     fill: parent
                     margins: units.gu(2)
                 }
+                spacing: units.gu(1)
 
-                Text {
-                    id: presentationTime
+                Row {
+                    spacing: units.gu(1)
+                    Label {
+                        text: 'Time'
+                        width: units.gu(5)
+                    }
+
+                    TextField {
+                        id: presentationFromTime
+                        width: units.gu(8)
+                        readOnly: true
+                    }
+                    TextField {
+                        id: presentationToTime
+                        width: units.gu(8)
+                        readOnly: true
+                    }
                 }
-                Text {
-                    id: presentationRoom
+                Row {
+                    spacing: units.gu(1)
+                    Label {
+                        text: 'Room'
+                        width: units.gu(5)
+                    }
+                    TextField {
+                        id: presentationRoom
+                        width: units.gu(20)
+                        readOnly: true
+                    }
                 }
-                Text {
+                TextArea {
                     id: presentationTitle
+                    width: parent.width
+                    autoSize: true
+                    maximumLineCount: 0
+                    readOnly: true
                 }
-                Text {
-                    id: presentationSummary
-                    wrapMode: Text.WordWrap
+                TextArea {
+                    id: presentationSummary                    
+                    width: parent.width
+                    autoSize: true
+                    maximumLineCount: 0
+                    readOnly: true
                 }
-                Text {
+                TextArea {
                     id: presentationSpeakers
+                    width: parent.width
+                    autoSize: true
+                    maximumLineCount: 0
+                    readOnly: true
                 }
             }
        }
