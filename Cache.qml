@@ -12,7 +12,6 @@ Item {
     function getETag(source) {
         init()
         var index = sources.indexOf(source)
-        console.log("index of " + source + " is " + index)
         if (index >= 0) return eTags[index]
         return ''
     }
@@ -26,10 +25,6 @@ Item {
 
     function put(source, eTag, json) {
         var index = sources.indexOf(source)
-
-        console.log("====PUT " + source + "  eTag " + eTag)
-        //console.log(json)
-        console.log("index of " + source + " is " + index)
 
         var copy // funny copying needed because variants are immutable
         if (index >= 0) {
@@ -53,8 +48,6 @@ Item {
             copy.push(json)
             jsons = copy
         }
-        console.log("sources.length" + sources.length)
-        //console.log(sources)
 
         var length = sources.length
         if (maxItems > -1 && maxItems > length) {

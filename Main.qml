@@ -96,15 +96,73 @@ MainView {
                     margins: units.gu(2)
                 }
 
+                Empty {
+                    id: scheduleDelegate
+                    //progression: true
+                    onClicked: {
+                        presentation.updatePresentation(scheduleItems.get(index))
+                        pageStack.push(presentation)
+                    }
+                    Column {
+                        //anchors.fill: parent
+                        spacing: units.gu(1)
+                        Text { text: scheduleItems.getTitle(index) }
+                        Row {
+                            spacing: units.gu(1)
+                            Text {
+                                width: units.gu(8)
+                                text: scheduleItems.getFromTime(index)
+                            }
+                            Text {
+                                width: units.gu(8)
+                                text: scheduleItems.getToTime(index)
+                            }
+                            Text {
+                                width: units.gu(13)
+                                text: scheduleItems.getRoom(index)
+                            }
+                        }
+                    }
+                }
+
                 ListView {
                     anchors.fill: parent
                     model: scheduleItems
+
                     delegate: Standard {
-                        text: scheduleItems.getTitle(index)
                         progression: true
                         onClicked: {
                             presentation.updatePresentation(scheduleItems.get(index))
                             pageStack.push(presentation)
+                        }
+                        Column {
+                            spacing: units.gu(.5)
+                            Label {
+                                width: units.gu(44)
+                                text: scheduleItems.getTitle(index)
+                                elide: Text.ElideMiddle
+                            }
+                            Row {
+                                spacing: units.gu(1)
+                                Label {
+                                    width: units.gu(8)
+                                    fontSize: "small"
+                                    text: scheduleItems.getFromTime(index)
+                                }
+                                Label {
+                                    width: units.gu(8)
+                                    fontSize: "small"
+                                    text: scheduleItems.getToTime(index)
+                                }
+                                Label {
+                                    width: units.gu(6)
+                                }
+                                Label {
+                                    width: units.gu(13)
+                                    fontSize: "small"
+                                    text: scheduleItems.getRoom(index)
+                                }
+                            }
                         }
                     }
                 }
