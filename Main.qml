@@ -102,10 +102,6 @@ MainView {
                 }
 
                 function updateTitle() {
-                    console.log("++++++ onDataChanged")
-                    console.log('Schedule' + count)
-                    console.log('Schedule' + (count > 0 ? ' - ' + get(0).day : ''))
-                    console.log('Schedule' + get(0).day)
                     schedule.title = 'Schedule' + (count > 0 ? ' - ' + get(0).day : '')
                 }
             }
