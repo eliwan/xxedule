@@ -25,9 +25,11 @@ Item {
 
             // get from cache
             eTag = ''
+            console.log("Cache " + cache)
             if (cache) {
                 eTag = cache.getETag(source)
                 json = cache.getJson(source)
+                console.log("++++ got from cache " + eTag)
             }
 
             var xhr = new XMLHttpRequest;
@@ -64,6 +66,9 @@ Item {
     }
 
     function parseJsonString(jsonString, jsonPathQuery) {
+        console.log('--------------')
+        console.log(jsonString)
+        console.log('--------------')
         var objectArray = JSON.parse(jsonString);
         if ( jsonPathQuery !== "" )
             objectArray = JsonPath.jsonPath(objectArray, jsonPathQuery);

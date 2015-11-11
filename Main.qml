@@ -32,10 +32,6 @@ MainView {
         id: jsonCache
         maxItems: -1
     }
-    Cache {
-        id: presentationCache
-        maxItems: 50
-    }
 
     property real spacing: units.gu(1)
     property real margins: units.gu(2)
@@ -53,12 +49,44 @@ MainView {
             title: 'Schedule'
             visible: false
 
-            property int dayIndex
+            property string scheduleHref
 
-            function updateDay(idx) {
-                dayIndex = idx
-                dayInfo.text = dayItems.getTitle(dayIndex)
+            ListModel {
+                id: scheduleItems
+
+                function getFromTime(idx) {
+                    return (idx >= 0 && idx < count) ? get(idx).fromTime: ""
+                }
+                function getToTime(idx) {
+                    return (idx >= 0 && idx < count) ? get(idx).toTime: ""
+                }
+                function getRoom(idx) {
+                    return (idx >= 0 && idx < count) ? get(idx).roomName: ""
+                }
+                function getTitle(idx) {
+                    if (idx >= 0 && idx < count) {
+                        var entry = get(idx)
+                        if (entry.talk && entry.talk.title) return entry.talk.title
+                        if (entry["break"]) return entry["break"].nameEN
+                    }
+                    return ""
+                }
             }
+
+            ActivityIndicator {
+                id: scheduleActivityIndicator
+                anchors.right: parent.right
+            }
+
+            JsonListModel {
+                    id: scheduleJsonItems
+                    model: scheduleItems
+                    query: "$.slots"
+                    activityIndicator: scheduleActivityIndicator
+                    cache: jsonCache
+                }
+
+            onScheduleHrefChanged: scheduleJsonItems.source = scheduleHref
 
             Column {
                 id: scheduleLayout
@@ -67,20 +95,17 @@ MainView {
                     fill: parent
                     margins: units.gu(2)
                 }
-                spacing: units.gu(1)
 
-                Row {
+                ListView {
                     anchors.fill: parent
-                    spacing: units.gu(1)
-
-                    TextField {
-                        id: dayInfo
-                        objectName: "inputFrom"
-                        errorHighlight: false
-                        height: units.gu(5)
-                        width: units.gu(46)
-                        font.pixelSize: FontUtils.sizeToPixels("medium")
-                        text: ''
+                    model: scheduleItems
+                    delegate: Standard {
+                        text: scheduleItems.getTitle(index)
+                        progression: true
+                        onClicked: {
+                            presentation.updatePresentation(scheduleItems.get(index))
+                            pageStack.push(presentation)
+                        }
                     }
                 }
             }
@@ -142,7 +167,7 @@ MainView {
                         text: title
                         progression: true
                         onClicked: {
-                            schedule.updateDay(index)
+                            schedule.scheduleHref = dayItems.getHref(index)
                             pageStack.push(schedule)
                         }
                     }
@@ -154,6 +179,40 @@ MainView {
             id: presentation
             title: 'Presentation'
             visible: false
+
+            function updatePresentation(item) {
+                presentationTime.text = item.fromTime + " - " + item.toTime
+                presentationRoom.text = item.roomName
+                presentationTitle.text = item.talk.title
+                presentationSummary.text = item.talk.summary
+                //presentationSpeakers.text = item.talk.speakers.name
+            }
+
+            Column {
+                id : presentationLayout
+
+                anchors {
+                    fill: parent
+                    margins: units.gu(2)
+                }
+
+                Text {
+                    id: presentationTime
+                }
+                Text {
+                    id: presentationRoom
+                }
+                Text {
+                    id: presentationTitle
+                }
+                Text {
+                    id: presentationSummary
+                    wrapMode: Text.WordWrap
+                }
+                Text {
+                    id: presentationSpeakers
+                }
+            }
        }
 
         Page {
@@ -180,11 +239,13 @@ MainView {
             JsonListModel {
                     id: conferenceJsonItems
                     model: conferenceItems
-                    source: 'http://cfp.devoxx.be/api/conferences'
                     query: "$.links"
                     activityIndicator: conferencesActivityIndicator
                     cache: jsonCache
+                    //source: 'http://cfp.devoxx.be/api/conferences'
                 }
+            Component.onCompleted: conferenceJsonItems.source = 'http://cfp.devoxx.be/api/conferences'
+
 
             Component {
                 id: conferenceItemDelegate
