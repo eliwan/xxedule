@@ -84,6 +84,7 @@ MainView {
                 id: scheduleItems
 
                 function getFromTime(idx) {
+                    updateTitle()
                     return (idx >= 0 && idx < count) ? get(idx).fromTime: ""
                 }
                 function getToTime(idx) {
@@ -99,6 +100,14 @@ MainView {
                     }
                     return ""
                 }
+
+                function updateTitle() {
+                    console.log("++++++ onDataChanged")
+                    console.log('Schedule' + count)
+                    console.log('Schedule' + (count > 0 ? ' - ' + get(0).day : ''))
+                    console.log('Schedule' + get(0).day)
+                    schedule.title = 'Schedule' + (count > 0 ? ' - ' + get(0).day : '')
+                }
             }
 
             ActivityIndicator {
@@ -111,7 +120,7 @@ MainView {
                     model: scheduleItems
                     query: "$.slots"
                     activityIndicator: scheduleActivityIndicator
-                    cache: jsonCache
+                    cache: jsonCache                    
                 }
 
             onScheduleHrefChanged: scheduleJsonItems.source = scheduleHref
