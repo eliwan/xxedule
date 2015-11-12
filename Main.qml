@@ -251,66 +251,75 @@ MainView {
                 presentationSpeakers.text = getPresentationSpeakers(item)
             }
 
-            Column {
-                id : presentationLayout
-
+            Flickable {
+                id: presentationFlickable
                 anchors {
                     fill: parent
                     margins: units.gu(2)
                 }
-                spacing: units.gu(1)
+                contentHeight: contentItem.childrenRect.height
 
-                Row {
+                Column {
+                    id : presentationLayout
+                    width: parent.width
                     spacing: units.gu(1)
-                    Label {
-                        text: 'Time'
-                        width: units.gu(5)
-                    }
 
-                    TextField {
-                        id: presentationFromTime
-                        width: units.gu(8)
+                    Row {
+                        spacing: units.gu(1)
+                        Label {
+                            text: 'Time'
+                            width: units.gu(5)
+                        }
+
+                        TextField {
+                            id: presentationFromTime
+                            width: units.gu(8)
+                            readOnly: true
+                        }
+                        TextField {
+                            id: presentationToTime
+                            width: units.gu(8)
+                            readOnly: true
+                        }
+                    }
+                    Row {
+                        spacing: units.gu(1)
+                        Label {
+                            text: 'Room'
+                            width: units.gu(5)
+                        }
+                        TextField {
+                            id: presentationRoom
+                            width: units.gu(20)
+                            readOnly: true
+                        }
+                    }
+                    TextArea {
+                        id: presentationTitle
+                        width: parent.width
+                        autoSize: true
+                        maximumLineCount: 0
                         readOnly: true
                     }
-                    TextField {
-                        id: presentationToTime
-                        width: units.gu(8)
+                    TextArea {
+                        id: presentationSummary
+                        width: parent.width
+                        autoSize: true
+                        maximumLineCount: 0
+                        readOnly: true
+                    }
+                    TextArea {
+                        id: presentationSpeakers
+                        width: parent.width
+                        autoSize: true
+                        maximumLineCount: 0
                         readOnly: true
                     }
                 }
-                Row {
-                    spacing: units.gu(1)
-                    Label {
-                        text: 'Room'
-                        width: units.gu(5)
-                    }
-                    TextField {
-                        id: presentationRoom
-                        width: units.gu(20)
-                        readOnly: true
-                    }
-                }
-                TextArea {
-                    id: presentationTitle
-                    width: parent.width
-                    autoSize: true
-                    maximumLineCount: 0
-                    readOnly: true
-                }
-                TextArea {
-                    id: presentationSummary                    
-                    width: parent.width
-                    autoSize: true
-                    maximumLineCount: 0
-                    readOnly: true
-                }
-                TextArea {
-                    id: presentationSpeakers
-                    width: parent.width
-                    autoSize: true
-                    maximumLineCount: 0
-                    readOnly: true
-                }
+            }
+            Scrollbar {
+                flickableItem: presentationFlickable
+                align: Qt.AlignTrailing
             }
        }
 
