@@ -267,6 +267,7 @@ MainView {
                     Row {
                         spacing: units.gu(1)
                         Label {
+                            anchors.verticalCenter: parent.verticalCenter
                             text: 'Time'
                             width: units.gu(5)
                         }
@@ -285,6 +286,7 @@ MainView {
                     Row {
                         spacing: units.gu(1)
                         Label {
+                            anchors.verticalCenter: parent.verticalCenter
                             text: 'Room'
                             width: units.gu(5)
                         }
