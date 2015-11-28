@@ -276,11 +276,23 @@ MainView {
                             id: presentationFromTime
                             width: units.gu(8)
                             readOnly: true
+
+                            UbuntuShape {
+                                z: -1
+                                color: Theme.palette.normal.field
+                                anchors.fill: parent
+                            }
                         }
                         TextField {
                             id: presentationToTime
                             width: units.gu(8)
                             readOnly: true
+
+                            UbuntuShape {
+                                z: -1
+                                color: Theme.palette.normal.field
+                                anchors.fill: parent
+                            }
                         }
                     }
                     Row {
@@ -294,6 +306,12 @@ MainView {
                             id: presentationRoom
                             width: units.gu(20)
                             readOnly: true
+
+                            UbuntuShape {
+                                z: -1
+                                color: Theme.palette.normal.field
+                                anchors.fill: parent
+                            }
                         }
                     }
                     TextArea {
@@ -302,6 +320,12 @@ MainView {
                         autoSize: true
                         maximumLineCount: 0
                         readOnly: true
+
+                        UbuntuShape {
+                            z: -1
+                            color: Theme.palette.normal.field
+                            anchors.fill: parent
+                        }
                     }
                     TextArea {
                         id: presentationSummary
@@ -309,6 +333,12 @@ MainView {
                         autoSize: true
                         maximumLineCount: 0
                         readOnly: true
+
+                        UbuntuShape {
+                            z: -1
+                            color: Theme.palette.normal.field
+                            anchors.fill: parent
+                        }
                     }
                     TextArea {
                         id: presentationSpeakers
@@ -316,6 +346,12 @@ MainView {
                         autoSize: true
                         maximumLineCount: 0
                         readOnly: true
+
+                        UbuntuShape {
+                            z: -1
+                            color: Theme.palette.normal.field
+                            anchors.fill: parent
+                        }
                     }
                 }
             }
